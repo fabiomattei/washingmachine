@@ -135,7 +135,7 @@ public class WashingMachineTest {
     public void givenAlphanumerical_GoodIfJustAlphanumerical() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
-        values.put("name", "Hello   123  \n   ?");
+        values.put("name", "Hello 123  \n   ?");
         rules.put("name", "required|alphanumerical");
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
@@ -144,22 +144,22 @@ public class WashingMachineTest {
     }
 
     @Test
-    public void givenAlphanumerical_NotGoodIfNotJustAlphanumerical() {
+    public void givenAlphanumerical_GoodIfContainsFewSymbols() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
-        values.put("name", "Hello @  123");
+        values.put("name", "Hello / {} () [] @ + = \n ?");
         rules.put("name", "required|alphanumerical");
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
-        Assert.assertEquals(false, wm.isGood());
+        Assert.assertEquals(true, wm.isGood());
     }
 
     @Test
     public void givenAlpha_GoodIfJustAlpha() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
-        values.put("name", "Hello fabio how are you good boy!");
+        values.put("name", "Hello fabio how are you good boy èàòù!");
         rules.put("name", "required|onlyalpha");
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);

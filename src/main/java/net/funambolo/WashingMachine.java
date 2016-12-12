@@ -7,7 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Fabio Mattei on 19/08/14.
+ * Created by Fabio Mattei
+ *
+ * @version 1.0
+ * @date 21/01/2015
+ *
+ * This class is meant to validate the input following the rules given by the software developer.
+ * It gives an alarm if the input does not follow the rules and it gives back to the caller
+ * the cleaned values.
  */
 public class WashingMachine {
     private HashMap<String, String> values;
@@ -35,6 +42,14 @@ public class WashingMachine {
         return cleanValues;
     }
 
+    public String getCleanValue(String key) {
+        if (cleanValues.containsKey(key)) {
+            return cleanValues.get(key);
+        } else {
+            return "";
+        }
+    }
+
     public boolean isGood() {
         boolean out = true;
         for (String key : values.keySet()) {
@@ -45,7 +60,6 @@ public class WashingMachine {
                 cleanValues.put(key, stripXSS(values.get(key).trim()));
             }
         }
-
         return out;
     }
 
@@ -55,7 +69,7 @@ public class WashingMachine {
             return false;
         }
         if (rule == null) {
-            errors.add("No check defined for the field "+ field);
+            errors.add("No check defined for the field " + field);
             return false;
         }
         if (rule.contains("required")) {
@@ -64,7 +78,6 @@ public class WashingMachine {
                 return false;
             }
         }
-
         Pattern p = Pattern.compile(".*maxlen,([0-9]+).*");
         Matcher m = p.matcher(rule);
         if (m.find()) {
@@ -84,7 +97,6 @@ public class WashingMachine {
                 return false;
             }
         }
-
         p = Pattern.compile(".*exactlen,([0-9]+).*");
         m = p.matcher(rule);
         if (m.find()) {
@@ -96,14 +108,14 @@ public class WashingMachine {
         }
 
         if (rule.contains("alphanumerical")) {
-            if (!value.matches("(?=.*[^ ])[a-zA-Z0-9\\?;\\.!@\\-_\\n\\t\\r,: ]+")) {
+            if (!value.matches("^[a-zA-ZÀ-ÿ0-9\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]*$")) {
                 errors.add("The " + field + " field may only contain alpha-numeric characters");
                 return false;
             }
         }
 
         if (rule.contains("onlyalpha")) {
-            if (!value.matches("(?=.*[^ ])[a-zA-Z\\?;\\.!,: ]+")) {
+            if (!value.matches("(?=.*[^ ])[a-zA-ZÀ-ÿ\\?;\\.!@\\-_\\r\\n\\t\\/,: ]+")) {
                 errors.add("The " + field + " field may only contain alpha characters");
                 return false;
             }
@@ -124,7 +136,7 @@ public class WashingMachine {
         }
 
         if (rule.contains("boolean")) {
-            if (!(value.matches("true") ||value.matches("false"))) {
+            if (!(value.matches("true") || value.matches("false"))) {
                 errors.add("The " + field + " field may only contain a true or false value");
                 return false;
             }
@@ -165,7 +177,7 @@ public class WashingMachine {
         }
 
         if (rule.contains("date")) {
-            if (!value.matches("\\d{4}-\\d{2}-\\d{2}") ) {
+            if (!value.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 errors.add("The " + field + " field needs to be a valid date");
                 return false;
             }
@@ -225,5 +237,12 @@ public class WashingMachine {
         return value;
     }
 
-}
+    public String getAllErrors() {
+        String out = "";
+        for (String er : errors) {
+            out += er + " ";
+        }
+        return out;
+    }
 
+}

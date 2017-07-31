@@ -324,11 +324,11 @@ public class WashingMachineTest {
     }
 
     @Test
-    public void givenDate_ValidDateIsGood() {
+    public void givenDate_ValidCalendarDateIsGood() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
-        values.put("name", "2014-04-02");
-        rules.put("name", "required|date");
+        values.put("name", "22/05/2017");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_CALENDARDATE);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -336,11 +336,35 @@ public class WashingMachineTest {
     }
 
     @Test
-    public void givenDate_ValidDateWithStringIsNotGood() {
+    public void givenDate_ValidCalendarDateWithStringIsNotGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "22/05/2017a");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_CALENDARDATE);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(false, wm.isGood());
+    }
+
+    @Test
+    public void givenDate_ValidMySqlDateIsGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "2014-04-02");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_MYSQLDATE);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenDate_ValidMySqlDateWithStringIsNotGood() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "2014-04-02a");
-        rules.put("name", "required|date");
+        rules.put("name",  WashingMachine.RULE_REQUIRED + WashingMachine.RULE_MYSQLDATE);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);

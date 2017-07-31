@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 /**
  * Created by Fabio Mattei
  *
- * @version 1.0
- * @date 21/01/2015
+ * @version 1.3
+ * @date 31/07/2017
  *
  * This class is meant to validate the input following the rules given by the software developer.
  * It gives an alarm if the input does not follow the rules and it gives back to the caller
@@ -21,12 +21,57 @@ public class WashingMachine {
     private HashMap<String, String> rules;
     private HashMap<String, String> cleanValues = new HashMap<String, String>();
 
-    private List<String> errors = new ArrayList<String>();
+    public static final String RULE_BOOLEAN = "boolean";
+    public static final String RULE_INTEGER = "integer";
+    public static final String RULE_ONLYNUMERIC = "onlynumeric";
+    public static final String RULE_ONLYALPHA = "onlyalpha";
+    public static final String RULE_ALPHANUMERIC = "alphanumerical";
+    public static final String RULE_EXACTLEN = "exactlen";
+    public static final String RULE_MINLEN = "minlen";
+    public static final String RULE_MAXLEN = "maxlen";
+    public static final String RULE_MINNUMERIC = "minnumeric";
+    public static final String RULE_MAXNUMERIC = "maxnumeric";
+    public static final String RULE_CALENDARDATE = "calendardate";
+    public static final String RULE_MYSQLDATE = "mysqldate";
+    public static final String RULE_TIME = "time";
+    public static final String RULE_REQUIRED = "required";
+    public static final String RULE_CHECKBOX = "checkbox";
+    public static final String RULE_DIV = "|";
+    public static final String EMPTY_STRING = "";
 
+    private List<String> errors = new ArrayList<>();
+
+    /**
+     * This class check the content of a set o fields to see if they contina what they are ment to
+     * possible filters are:
+     * - boolean             can contain [true, false]
+     * - integer             can contain an integer number
+     * - onlynumeric         can contain a number integer or float (with comma or dots)
+     * - onlyalpha           can contain only alphabetical characters (even with accents) and ? , : ; . ! @ € £ $ & + = * - _ \r \n \t
+     * - alphanumerical      it is a combination of onlyalpha and onlynumeric
+     * - exactlen            followed by a number is the exact allowed lenght of the passed parameter
+     * - minlen              followed by a number is the minimum allowed lenght of the passed parameter
+     * - maxlen              followed by a number is the maximum allowed lenght of the passed parameter
+     * - minnumeric          followed by a number n the filled content need to be greater then n
+     * - maxnumeric          followed by a number n the filled content need to be less then n
+     * - date                it has to have the format dd/mm/yyyy
+     * - required            the field is mandatory
+     * - checkbox            the field could be missing and that would not give an error, a check box must be followed by a type ex: integer or alphanumerical
+     *
+     * Example of usages
+     * "required|integer"                      the parameter is a required integer number
+     * "required|alphanumerical|maxlen250"     the parameter is required, alphanumerical and has a maximum allowed lenght of 250
+     */
     public WashingMachine() {
     }
 
     public void setValues(HashMap<String, String> values) {
+        // iterating through the values to set eventual null to empty String
+        for (String k: values.keySet()) {
+            if (values.get(k) == null) {
+                values.put(k, "");
+            }
+        }
         this.values = values;
     }
 
@@ -50,6 +95,24 @@ public class WashingMachine {
         }
     }
 
+    /**
+     * return all pair [key, value] with a key that contains a certain pattern
+     *
+     * Example if pattern is "checkbox" and key is "checkbox01" the pair key, value will be returned
+     *
+     * @param pattern
+     * @return
+     */
+    public HashMap<String, String> getCleanValuesWithPattern(String pattern) {
+        HashMap<String, String> out = new HashMap<>();
+        for (String key : cleanValues.keySet()) {
+            if (key.contains(pattern)) {
+                out.put(key, cleanValues.get(key));
+            }
+        }
+        return out;
+    }
+
     public boolean isGood() {
         boolean out = true;
         for (String key : values.keySet()) {
@@ -65,14 +128,25 @@ public class WashingMachine {
 
     private boolean singleValueIsGood(String field, String value, String rule) {
         if (value == null) {
-            errors.add("The field " + field + " has not been defined");
-            return false;
+            // a checkbox could send back a null field
+            if (rule.contains(RULE_CHECKBOX)) {
+                if (rule.contains(RULE_INTEGER) || rule.contains(RULE_ONLYNUMERIC)) {
+                    values.put(field, "0");
+                    value = "0";
+                } else {
+                    values.put(field, "");
+                    value = "";
+                }
+            } else {
+                errors.add("The field " + field + " has not been defined");
+                return false;
+            }
         }
         if (rule == null) {
             errors.add("No check defined for the field " + field);
             return false;
         }
-        if (rule.contains("required")) {
+        if (rule.contains(RULE_REQUIRED)) {
             if (value.trim().length() == 0) {
                 errors.add("The " + field + " field is required");
                 return false;
@@ -107,35 +181,35 @@ public class WashingMachine {
             }
         }
 
-        if (rule.contains("alphanumerical")) {
+        if (rule.contains(RULE_ALPHANUMERIC)) {
             if (!value.matches("^[a-zA-ZÀ-ÿ0-9\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]*$")) {
                 errors.add("The " + field + " field may only contain alpha-numeric characters");
                 return false;
             }
         }
 
-        if (rule.contains("onlyalpha")) {
-            if (!value.matches("(?=.*[^ ])[a-zA-ZÀ-ÿ\\?;\\.!@\\-_\\r\\n\\t\\/,: ]+")) {
+        if (rule.contains(RULE_ONLYALPHA)) {
+            if (!value.matches("(?=.*[^ ])[a-zA-ZÀ-ÿ\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]+")) {
                 errors.add("The " + field + " field may only contain alpha characters");
                 return false;
             }
         }
 
-        if (rule.contains("onlynumeric")) {
+        if (rule.contains(RULE_ONLYNUMERIC)) {
             if (!value.matches("(?=.*[^ ])[0-9\\., ]+")) {
                 errors.add("The " + field + " field may only contain numeric characters");
                 return false;
             }
         }
 
-        if (rule.contains("integer")) {
+        if (rule.contains(RULE_INTEGER)) {
             if (!value.matches("(?=.*[^ ])[0-9]+")) {
                 errors.add("The " + field + " field may only contain integer number");
                 return false;
             }
         }
 
-        if (rule.contains("boolean")) {
+        if (rule.contains(RULE_BOOLEAN)) {
             if (!(value.matches("true") || value.matches("false"))) {
                 errors.add("The " + field + " field may only contain a true or false value");
                 return false;
@@ -154,7 +228,7 @@ public class WashingMachine {
                 return false;
             }
             if (localvalue < mx) {
-                errors.add("The " + field + " field needs to be exactly " + value.length() + " character in length");
+                errors.add("The " + field + " field needs to greater then " + mx );
                 return false;
             }
         }
@@ -171,14 +245,28 @@ public class WashingMachine {
                 return false;
             }
             if (localvalue > mx) {
-                errors.add("The " + field + " field needs to be exactly " + value.length() + " character in length");
+                errors.add("The " + field + " field needs to less then " + mx);
                 return false;
             }
         }
 
-        if (rule.contains("date")) {
-            if (!value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        if (rule.contains(RULE_CALENDARDATE)) {
+            if (!value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
                 errors.add("The " + field + " field needs to be a valid date");
+                return false;
+            }
+        }
+
+        if (rule.contains(RULE_MYSQLDATE)) {
+            if (!value.matches("^(\\d{4})-\\d{2}-(\\d{2})$")) {
+                errors.add("The " + field + " field needs to be a valid date");
+                return false;
+            }
+        }
+
+        if (rule.contains(RULE_TIME)) {
+            if (!value.matches("\\d{2}:\\d{2}")) {
+                errors.add("The " + field + " field needs to be a valid time");
                 return false;
             }
         }

@@ -104,6 +104,18 @@ public class WashingMachine {
         }
     }
 
+    public long getCleanLongValue(String key) {
+        if (cleanValues.containsKey(key)) {
+            try {
+                return Long.parseLong(cleanValues.get(key));
+            } catch (NumberFormatException ex) {
+                return (long) 0;
+            }
+        } else {
+            return (long) 0;
+        }
+    }
+
     /**
      * return all pair [key, value] with a key that contains a certain pattern
      *
@@ -387,6 +399,14 @@ public class WashingMachine {
         String out = "";
         for (String er : errors) {
             out += er + " ";
+        }
+        return out;
+    }
+
+    public String getAllErrorsWithBr() {
+        String out = "";
+        for (String er : errors) {
+            out += er + "</br>";
         }
         return out;
     }

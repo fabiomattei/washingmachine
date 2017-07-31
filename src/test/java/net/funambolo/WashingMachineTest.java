@@ -261,6 +261,7 @@ public class WashingMachineTest {
         wm.setValues(values);
         wm.setRules(rules);
         Assert.assertEquals(true, wm.isGood());
+        Assert.assertEquals(0, wm.getCleanLongValue("name"));
     }
 
     @Test

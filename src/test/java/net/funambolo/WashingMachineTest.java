@@ -136,7 +136,19 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "Hello 123  \n   ?");
-        rules.put("name", "required|alphanumerical");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ALPHANUMERIC);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenAlphanumericalUnrequired_GoodIfJustEmpty() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_ALPHANUMERIC);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -148,7 +160,7 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "Hello / {} () [] @ + = \n ?");
-        rules.put("name", "required|alphanumerical");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ALPHANUMERIC);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -160,7 +172,19 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "Hello fabio how are you good boy èàòù!");
-        rules.put("name", "required|onlyalpha");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ONLYALPHA);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenAlphaUnrequired_GoodIfJustEmpty() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_ONLYALPHA);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -172,7 +196,7 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "Hello @  123");
-        rules.put("name", "required|onlyalpha");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ONLYALPHA);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);

@@ -44,6 +44,8 @@ public class WashingMachine {
     private static final String RE_TIME = "\\d{2}:\\d{2}";
     private static final String RE_INTEGER = "(?=.*[^ ])[0-9]+";
     private static final String RE_ONLYNUMERIC = "(?=.*[^ ])[0-9\\., ]+";
+    private static final String RE_ONLYALPHA = "(?=.*[^ ])[a-zA-ZÀ-ÿ\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]+";
+    private static final String RE_ALPHANUMERIC = "^[a-zA-ZÀ-ÿ0-9\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]*$";
 
     private List<String> errors = new ArrayList<>();
 
@@ -189,16 +191,30 @@ public class WashingMachine {
         }
 
         if (rule.contains(RULE_ALPHANUMERIC)) {
-            if (!value.matches("^[a-zA-ZÀ-ÿ0-9\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]*$")) {
-                errors.add("The " + field + " field may only contain alpha-numeric characters");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_ALPHANUMERIC)) {
+                    errors.add("The " + field + " field may only contain alpha-numeric characters");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_ALPHANUMERIC)) {
+                    errors.add("The " + field + " field may only contain alpha-numeric characters");
+                    return false;
+                }
             }
         }
 
         if (rule.contains(RULE_ONLYALPHA)) {
-            if (!value.matches("(?=.*[^ ])[a-zA-ZÀ-ÿ\\?;\\.!@€£$&\\+=*\\{\\}\\[\\]\\(\\)\\-_\\r\\n\\t\\/,: ]+")) {
-                errors.add("The " + field + " field may only contain alpha characters");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_ONLYALPHA)) {
+                    errors.add("The " + field + " field may only contain alpha characters");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_ONLYALPHA)) {
+                    errors.add("The " + field + " field may only contain alpha characters");
+                    return false;
+                }
             }
         }
 

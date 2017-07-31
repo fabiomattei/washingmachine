@@ -336,6 +336,18 @@ public class WashingMachineTest {
     }
 
     @Test
+    public void givenDate_EmptyAndUnrequiredCalendarDateIsGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_CALENDARDATE);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
     public void givenDate_ValidCalendarDateWithStringIsNotGood() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();

@@ -251,9 +251,20 @@ public class WashingMachine {
         }
 
         if (rule.contains(RULE_CALENDARDATE)) {
-            if (!value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
-                errors.add("The " + field + " field needs to be a valid date");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
+                    errors.add("The " + field + " field needs to be a valid date");
+                    return false;
+                }
+            } else {
+                if (EMPTY_STRING.equals(value)) {
+                    // nothing to do, an unrequired field can be empty
+                } else {
+                    if (!value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
+                        errors.add("The " + field + " field needs to be a valid date");
+                        return false;
+                    }
+                }
             }
         }
 

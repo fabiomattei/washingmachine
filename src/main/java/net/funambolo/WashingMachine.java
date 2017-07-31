@@ -39,6 +39,12 @@ public class WashingMachine {
     public static final String RULE_DIV = "|";
     public static final String EMPTY_STRING = "";
 
+    private static final String RE_CALENDARDATE = "^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$";
+    private static final String RE_MYSQLDATE = "^(\\d{4})-\\d{2}-(\\d{2})$";
+    private static final String RE_TIME = "\\d{2}:\\d{2}";
+    private static final String RE_INTEGER = "(?=.*[^ ])[0-9]+";
+    private static final String RE_ONLYNUMERIC = "(?=.*[^ ])[0-9\\., ]+";
+
     private List<String> errors = new ArrayList<>();
 
     /**
@@ -54,7 +60,8 @@ public class WashingMachine {
      * - maxlen              followed by a number is the maximum allowed lenght of the passed parameter
      * - minnumeric          followed by a number n the filled content need to be greater then n
      * - maxnumeric          followed by a number n the filled content need to be less then n
-     * - date                it has to have the format dd/mm/yyyy
+     * - calendardate        it has to have the format dd/mm/yyyy
+     * - mysqldate           it has to have the format yyyy-mm-dd
      * - required            the field is mandatory
      * - checkbox            the field could be missing and that would not give an error, a check box must be followed by a type ex: integer or alphanumerical
      *
@@ -196,16 +203,30 @@ public class WashingMachine {
         }
 
         if (rule.contains(RULE_ONLYNUMERIC)) {
-            if (!value.matches("(?=.*[^ ])[0-9\\., ]+")) {
-                errors.add("The " + field + " field may only contain numeric characters");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_ONLYNUMERIC)) {
+                    errors.add("The " + field + " field may only contain numeric characters");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_ONLYNUMERIC)) {
+                    errors.add("The " + field + " field may only contain numeric characters");
+                    return false;
+                }
             }
         }
 
         if (rule.contains(RULE_INTEGER)) {
-            if (!value.matches("(?=.*[^ ])[0-9]+")) {
-                errors.add("The " + field + " field may only contain integer number");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_INTEGER)) {
+                    errors.add("The " + field + " field may only contain integer number");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_INTEGER)) {
+                    errors.add("The " + field + " field may only contain integer number");
+                    return false;
+                }
             }
         }
 
@@ -252,12 +273,12 @@ public class WashingMachine {
 
         if (rule.contains(RULE_CALENDARDATE)) {
             if (rule.contains(RULE_REQUIRED)) {
-                if (!value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
+                if (!value.matches(RE_CALENDARDATE)) {
                     errors.add("The " + field + " field needs to be a valid date");
                     return false;
                 }
             } else {
-                if (!EMPTY_STRING.equals(value) && !value.matches("^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-](\\d{4})$")) {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_CALENDARDATE)) {
                     errors.add("The " + field + " field needs to be a valid date");
                     return false;
                 }
@@ -265,16 +286,30 @@ public class WashingMachine {
         }
 
         if (rule.contains(RULE_MYSQLDATE)) {
-            if (!value.matches("^(\\d{4})-\\d{2}-(\\d{2})$")) {
-                errors.add("The " + field + " field needs to be a valid date");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_MYSQLDATE)) {
+                    errors.add("The " + field + " field needs to be a valid date");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_MYSQLDATE)) {
+                    errors.add("The " + field + " field needs to be a valid date");
+                    return false;
+                }
             }
         }
 
         if (rule.contains(RULE_TIME)) {
-            if (!value.matches("\\d{2}:\\d{2}")) {
-                errors.add("The " + field + " field needs to be a valid time");
-                return false;
+            if (rule.contains(RULE_REQUIRED)) {
+                if (!value.matches(RE_TIME)) {
+                    errors.add("The " + field + " field needs to be a valid time");
+                    return false;
+                }
+            } else {
+                if (!EMPTY_STRING.equals(value) && !value.matches(RE_TIME)) {
+                    errors.add("The " + field + " field needs to be a valid time");
+                    return false;
+                }
             }
         }
 

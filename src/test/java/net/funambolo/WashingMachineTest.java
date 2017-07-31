@@ -184,7 +184,19 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "1234.56");
-        rules.put("name", "required|onlynumeric");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ONLYNUMERIC);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenNumericUnrequired_GoodIfJustEmpty() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_ONLYNUMERIC);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -196,7 +208,7 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "Hello @  123");
-        rules.put("name", "required|onlynumeric");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_ONLYNUMERIC);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -208,7 +220,19 @@ public class WashingMachineTest {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "1234");
-        rules.put("name", "required|integer");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_INTEGER);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenIntegerUnrequired_GoodIfJustEmpty() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_INTEGER);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);
@@ -372,11 +396,59 @@ public class WashingMachineTest {
     }
 
     @Test
+    public void givenDate_EmptyAndUnrequiredMySqlDateIsGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_MYSQLDATE);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
     public void givenDate_ValidMySqlDateWithStringIsNotGood() {
         HashMap<String, String> values = new HashMap<String, String>();
         HashMap<String, String> rules = new HashMap<String, String>();
         values.put("name", "2014-04-02a");
         rules.put("name",  WashingMachine.RULE_REQUIRED + WashingMachine.RULE_MYSQLDATE);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(false, wm.isGood());
+    }
+
+    @Test
+    public void givenDate_ValidTimeIsGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "12:45");
+        rules.put("name", WashingMachine.RULE_REQUIRED + WashingMachine.RULE_TIME);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenDate_EmptyAndUnrequiredTimeIsGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "");
+        rules.put("name", WashingMachine.RULE_TIME);
+        WashingMachine wm = new WashingMachine();
+        wm.setValues(values);
+        wm.setRules(rules);
+        Assert.assertEquals(true, wm.isGood());
+    }
+
+    @Test
+    public void givenDate_ValidTimeWithStringIsNotGood() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        HashMap<String, String> rules = new HashMap<String, String>();
+        values.put("name", "12:45a");
+        rules.put("name",  WashingMachine.RULE_REQUIRED + WashingMachine.RULE_TIME);
         WashingMachine wm = new WashingMachine();
         wm.setValues(values);
         wm.setRules(rules);

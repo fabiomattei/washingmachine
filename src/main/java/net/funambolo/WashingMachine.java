@@ -416,7 +416,7 @@ public class WashingMachine {
     public String getAllErrorsWithBr() {
         String out = "";
         for (String er : errors) {
-            out += er + "</br>";
+            out += er + "<br />";
         }
         return out;
     }

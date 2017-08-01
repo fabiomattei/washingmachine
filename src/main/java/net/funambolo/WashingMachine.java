@@ -104,6 +104,16 @@ public class WashingMachine {
         }
     }
 
+    /**
+     * Debug purpose
+     * It prints with a System.out.println the parameter key, the associated rules, the received value and the clean value
+     */
+    public void printAllRulesAndParameters() {
+        for (String key : values.keySet()) {
+            System.out.println("Paramenter: " + key + "  Rule: " + rules.get(key) + "  Value: " + values.get(key) + "  Clean value: " + cleanValues.get(key));
+        }
+    }
+
     public long getCleanLongValue(String key) {
         if (cleanValues.containsKey(key)) {
             try {
